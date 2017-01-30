@@ -1,0 +1,7 @@
+--Para el correcto funcionamiento de la aplicaciòn se debe instalar Opencv Engine incluído en esta carpeta.
+--Interfaz de la aplicación--
+-Área de imágen:
+-Edittext:Donde se copia la patente. Se puede editar.
+-Botones: El botón OCR realiza la captura de carácteres desde la imágen.
+El botón Send lo guarda en la base de datos local y lo envía mediante método post http a una dirección (Se debe ingresar en el código. En Asynctask AdataPost.).
+-Área de información: Se muestra el contenido de la BD.
