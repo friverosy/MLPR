@@ -1,4 +1,5 @@
---Para el correcto funcionamiento de la aplicaciòn se debe instalar Opencv Engine incluído en esta carpeta.
+--Para el correcto funcionamiento de la aplicaciòn se debe instalar Opencv Engine incluído en esta carpeta. 
+También se debe copiar la carpeta ocr en la raiz del dispositivo.
 --Interfaz de la aplicación--
 -Área de imágen:
 -Edittext:Donde se copia la patente. Se puede editar.
