@@ -1,8 +1,19 @@
---Para el correcto funcionamiento de la aplicaciòn se debe instalar Opencv Engine incluído en esta carpeta. 
-También se debe copiar la carpeta ocr en la raiz del dispositivo.
---Interfaz de la aplicación--
--Área de imágen:
--Edittext:Donde se copia la patente. Se puede editar.
--Botones: El botón OCR realiza la captura de carácteres desde la imágen.
-El botón Send lo guarda en la base de datos local y lo envía mediante método post http a una dirección (Se debe ingresar en el código. En Asynctask AdataPost.).
--Área de información: Se muestra el contenido de la BD.
+# Dependencies #
+
+* Opencv Engine, Included in the /.
+* ocr folder
+
+# UI #
+
+## Image section ##
+* Edittext: Where the patent is copied. Can be edited
+* Buttons
+    * The OCR button, performs the capture of characters from the image.
+    * The Send button, it store it in the local database and send it throws http post method to an address (it must be entered in the code in Asynctask AdataPost).
+
+## Information section ## 
+* show content of db.
+
+# Versions #
+* MPR: OCR area dynamically searches the licence plate.
+* MPR2: OCR area is static.
