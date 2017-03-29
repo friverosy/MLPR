@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         Mat img_display = new Mat();
         img.copyTo( img_display );
 
-        Imgproc.rectangle(img_color, new Point((img_color.width()/2)-70,img_color.height()/2-25), new Point((img_color.width()/2)+70,img_color.height()/2+25), new Scalar(0,255,0) );
+        Imgproc.rectangle(img_color, new Point((img_color.width()/2)-70,img_color.height()/2-25), new Point((img_color.width()/2)+70,img_color.height()/2+25), new Scalar(0,255,0), 6);
 
         if(isOn){
             try {

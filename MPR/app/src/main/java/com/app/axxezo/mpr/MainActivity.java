@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             matchLoc = minMaxLocResult.maxLoc;
         }
 
-        Imgproc.rectangle(img_display, matchLoc, new Point(matchLoc.x + templ.cols(), matchLoc.y + templ.rows() ), new Scalar(255,0,0) );
+        Imgproc.rectangle(img_display, matchLoc, new Point(matchLoc.x + templ.cols(), matchLoc.y + templ.rows() ), new Scalar(255,0,0), 6);
 
         if(isOn){
             try {
