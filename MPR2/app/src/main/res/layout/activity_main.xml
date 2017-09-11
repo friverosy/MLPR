@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight=".70">
 
-            <org.opencv.android.JavaCameraView
+            <com.app.axxezo.mpr.MPRCameraView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="gone"

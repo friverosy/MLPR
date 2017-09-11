@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.android.BaseLoaderCallback;
@@ -27,8 +26,6 @@ import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -51,7 +48,7 @@ import static org.opencv.imgproc.Imgproc.MORPH_RECT;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private CameraBridgeViewBase mOpenCvCameraView;
+    private MPRCameraView mOpenCvCameraView;
 
     Mat mRgba;
     Bitmap bmp;
@@ -124,8 +121,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.opcv_view);
-
+        mOpenCvCameraView = (MPRCameraView) findViewById(R.id.opcv_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.disableFpsMeter();
         mOpenCvCameraView.setCvCameraViewListener(this);
@@ -252,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
      */
     @Override
     public void onCameraViewStarted(int width, int height) {
+        mOpenCvCameraView.enableAutoFocus();
         //
         //
     }
@@ -275,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         System.gc();
-
         img = inputFrame.gray();
         Mat img_color = inputFrame.rgba();
         // Source image to display
@@ -284,11 +280,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         Imgproc.rectangle(img_color, new Point((img_color.width()/2)-70,img_color.height()/2-25), new Point((img_color.width()/2)+70,img_color.height()/2+25), new Scalar(0,255,0), 6);
 
-        if(isOn){
+        if(isOn && !mOpenCvCameraView.isFocusing()){
             try {
                 Mat croppedPart;
                 Rect out = new Rect(new Point(img_display.width()/2-70,img_display.height()/2-25), new Point(img_display.width()/2+70,img_display.height()/2+25));
                 croppedPart = img.submat(out);
+                PlateProcessing pp = new PlateProcessing();
+                Mat pre_img = pp.getLicensePlate(croppedPart, null, null, 0);
+                //Mat pre_img = pp.getLicensePlate(img, null, null, 0);
 
                 /*Image Post-processing*/
 
@@ -298,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                 /*End Image Post-processing*/
 
-                bmp = Bitmap.createBitmap(croppedPart.width(), croppedPart.height(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(croppedPart, bmp);
+                bmp = Bitmap.createBitmap(pre_img.width(), pre_img.height(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(pre_img, bmp);
                 bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight());
 
             } catch (Exception e) {
@@ -310,8 +309,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
             isOn=false;
         }
-        //}
-
+        if (!isOn)
+            mOpenCvCameraView.enableAutoFocus();
         return img_color;
 
     }
@@ -336,7 +335,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         @Override
         protected Boolean doInBackground(JSONObject... JObj) {
-
             try {
 
                 Http http = new Http();
@@ -349,7 +347,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 return false;
 
             }
-
             return true;
         }
 
@@ -361,19 +358,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         DatabaseHelper db = new DatabaseHelper(getApplication());
         final ListView lv = (ListView) findViewById(R.id.list_data);
         int count = db.platedata_count();
-
-
-            final ArrayList<ListPlateItem> data = db.get_platedata_all();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    lv.setAdapter(new ItemPlateAdapter(getBaseContext(), data));
-                }
-            });
-
-
-
-
+        final ArrayList<ListPlateItem> data = db.get_platedata_all();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                lv.setAdapter(new ItemPlateAdapter(getBaseContext(), data));
+            }
+        });
     }
-
 
 }
