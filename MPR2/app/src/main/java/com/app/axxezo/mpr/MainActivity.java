@@ -34,7 +34,9 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -284,16 +286,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             try {
                 Mat croppedPart;
                 Rect out = new Rect(new Point(img_display.width()/2-70,img_display.height()/2-25), new Point(img_display.width()/2+70,img_display.height()/2+25));
-                croppedPart = img.submat(out);
+                croppedPart = img_color.submat(out);
                 PlateProcessing pp = new PlateProcessing();
                 Mat pre_img = pp.getLicensePlate(croppedPart, null, null, 0);
-                //Mat pre_img = pp.getLicensePlate(img, null, null, 0);
+                //Mat pre_img = pp.getLicensePlate(img_color, null, null, 0);
 
                 /*Image Post-processing*/
 
-                Imgproc.adaptiveThreshold(croppedPart, croppedPart, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 15, 5);
-                Imgproc.erode(croppedPart, croppedPart, Imgproc.getStructuringElement(MORPH_RECT, new Size(2, 2)));
-                Imgproc.dilate(croppedPart, croppedPart, Imgproc.getStructuringElement(MORPH_RECT, new Size(2, 2)));
+                //Imgproc.adaptiveThreshold(croppedPart, croppedPart, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 15, 5);
+                //Imgproc.erode(croppedPart, croppedPart, Imgproc.getStructuringElement(MORPH_RECT, new Size(2, 2)));
+                //Imgproc.dilate(croppedPart, croppedPart, Imgproc.getStructuringElement(MORPH_RECT, new Size(2, 2)));
 
                 /*End Image Post-processing*/
 
@@ -301,8 +303,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Utils.matToBitmap(pre_img, bmp);
                 bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight());
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.d(TAG, "cropped part data error " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        EditText ed = (EditText) findViewById(R.id.editText);
+                        ed.setText("Error: " + e.getMessage());
+                    }
+                });
             }
             if (bmp != null && isOn==true) {
                 doOCR(bmp);

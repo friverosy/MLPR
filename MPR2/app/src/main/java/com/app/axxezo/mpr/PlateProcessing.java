@@ -97,8 +97,8 @@ public class PlateProcessing {
         p[(pos+1)%4] = new Point(p[pos].x, p[pos].y + s*dy);
         p[(pos+2)%4] = new Point(p[(pos+1)%4].x - s*dx, p[(pos+1)%4].y);
         p[(pos+3)%4] = new Point(p[(pos+2)%4].x, p[(pos+2)%4].y - s*dy);
-        double mx = Double.min(Double.min(p[pos].x, p[(pos+1)%4].x), Double.min(p[(pos+2)%4].x, p[(pos+3)%4].x));
-        double my = Double.min(Double.min(p[pos].y, p[(pos+1)%4].y), Double.min(p[(pos+2)%4].y, p[(pos+3)%4].y));
+        double mx = Math.min(Math.min(p[pos].x, p[(pos+1)%4].x), Math.min(p[(pos+2)%4].x, p[(pos+3)%4].x));
+        double my = Math.min(Math.min(p[pos].y, p[(pos+1)%4].y), Math.min(p[(pos+2)%4].y, p[(pos+3)%4].y));
         if (mx < 0)
             for(int pi = 0; pi < 4; pi++)
                 p[pi].x += -mx + 20;
@@ -318,7 +318,7 @@ public class PlateProcessing {
         Imgproc.fillConvexPoly(mask, new MatOfPoint(box), new Scalar(255, 255, 255));
         Core.bitwise_and(img, black, newm, mask);
         Mat gray_img = new Mat();
-        Imgproc.cvtColor(newm, gray_img, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(newm, gray_img, Imgproc.COLOR_BGRA2GRAY);
         Mat rm = Imgproc.getRotationMatrix2D(rect.center, rect.angle, 1.0);
         Imgproc.warpAffine(gray_img, gray_img, rm, gray_img.size(), Imgproc.INTER_LINEAR, Core.BORDER_CONSTANT, new Scalar(255));
         Mat el = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
@@ -334,15 +334,15 @@ public class PlateProcessing {
         int cxl, cxr, cyb, cyt;
         cxl = cxr = cyb = cyt = 0;
         if (lptype == 0) {
-            cxl = Integer.min(Integer.max(0, (int)(Math.round(rect.center.x - rect.size.width / 2 + rect.size.width * 0.01))), thresh_img.width());
-            cxr = Integer.min(Integer.max(0, (int)(Math.round(rect.center.x + rect.size.width / 2 - rect.size.width * 0.01))), thresh_img.width());
-            cyb = Integer.min(Integer.max(0, (int)(Math.round(rect.center.y - rect.size.height / 2 + rect.size.height * 0.05))), thresh_img.height());
-            cyt = Integer.min(Integer.max(0, (int)(Math.round(rect.center.y + rect.size.height / 2 - rect.size.height * 0.20))), thresh_img.height());
+            cxl = Math.min(Math.max(0, (int)(Math.round(rect.center.x - rect.size.width / 2 + rect.size.width * 0.01))), thresh_img.width());
+            cxr = Math.min(Math.max(0, (int)(Math.round(rect.center.x + rect.size.width / 2 - rect.size.width * 0.01))), thresh_img.width());
+            cyb = Math.min(Math.max(0, (int)(Math.round(rect.center.y - rect.size.height / 2 + rect.size.height * 0.05))), thresh_img.height());
+            cyt = Math.min(Math.max(0, (int)(Math.round(rect.center.y + rect.size.height / 2 - rect.size.height * 0.20))), thresh_img.height());
         } else if (lptype == 1) {
-            cxl = Integer.min(Integer.max(0, (int)(Math.round(rect.center.x - rect.size.width / 2 + rect.size.width * 0.01))), thresh_img.width());
-            cxr = Integer.min(Integer.max(0, (int)(Math.round(rect.center.x + rect.size.width / 2 - rect.size.width * 0.01))), thresh_img.width());
-            cyb = Integer.min(Integer.max(0, (int)(Math.round(rect.center.y - rect.size.height / 2 + rect.size.height * 0.30))), thresh_img.height());
-            cyt = Integer.min(Integer.max(0, (int)(Math.round(rect.center.y + rect.size.height / 2 - rect.size.height * 0.10))), thresh_img.height());
+            cxl = Math.min(Math.max(0, (int)(Math.round(rect.center.x - rect.size.width / 2 + rect.size.width * 0.01))), thresh_img.width());
+            cxr = Math.min(Math.max(0, (int)(Math.round(rect.center.x + rect.size.width / 2 - rect.size.width * 0.01))), thresh_img.width());
+            cyb = Math.min(Math.max(0, (int)(Math.round(rect.center.y - rect.size.height / 2 + rect.size.height * 0.30))), thresh_img.height());
+            cyt = Math.min(Math.max(0, (int)(Math.round(rect.center.y + rect.size.height / 2 - rect.size.height * 0.10))), thresh_img.height());
         }
         int[] thr = getThresh(blur_img, rect.size.width, rect.size.height, cxl, cxr, cyb, cyt);
 
@@ -355,7 +355,7 @@ public class PlateProcessing {
 
     public Mat getLicensePlate(Mat img, String out, String ocr, int lptype) {
         Mat gray_img = new Mat();
-        Imgproc.cvtColor(img, gray_img, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(img, gray_img, Imgproc.COLOR_BGRA2GRAY);
         double vmin, vmax;
         Core.MinMaxLocResult res = Core.minMaxLoc(gray_img);
         vmin = res.minVal;
@@ -376,7 +376,7 @@ public class PlateProcessing {
         Core.subtract(thresh_img, black, thresh_img);
         Mat blur_img = new Mat();
         Imgproc.GaussianBlur(thresh_img, blur_img, new Size(5, 5), 0);
-        double thr = getThresh2(blur_img, img, lptype);
+        //double thr = getThresh2(blur_img, img, lptype);
         Imgproc.threshold(blur_img, thresh_img, min(vmean + vstd, vmax - vmin - 60), 255, Imgproc.THRESH_BINARY);
         Mat copy = new Mat();
         img.copyTo(copy);
