@@ -250,7 +250,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
      */
     @Override
     public void onCameraViewStarted(int width, int height) {
-        mOpenCvCameraView.enableAutoFocus();
+        //mOpenCvCameraView.enableAutoFocus();
+        mOpenCvCameraView.enableOnTouchFocus(this);
         //
         //
     }
@@ -279,13 +280,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // Source image to display
         Mat img_display = new Mat();
         img.copyTo( img_display );
-
-        Imgproc.rectangle(img_color, new Point((img_color.width()/2)-70,img_color.height()/2-25), new Point((img_color.width()/2)+70,img_color.height()/2+25), new Scalar(0,255,0), 6);
+        int width = 150;
+        int height = (int)(width/36.0*13.0);
+        //Imgproc.rectangle(img_color, new Point((img_color.width()/2)-70,img_color.height()/2-25), new Point((img_color.width()/2)+70,img_color.height()/2+25), new Scalar(0,255,0), 6);
+        Imgproc.rectangle(img_color, new Point((img_color.width()/2)-width/2,img_color.height()/2-height/2), new Point((img_color.width()/2)+width/2,img_color.height()/2+height/2), new Scalar(0,255,0), 6);
 
         if(isOn && !mOpenCvCameraView.isFocusing()){
             try {
                 Mat croppedPart;
-                Rect out = new Rect(new Point(img_display.width()/2-70,img_display.height()/2-25), new Point(img_display.width()/2+70,img_display.height()/2+25));
+                //Rect out = new Rect(new Point(img_display.width()/2-70,img_display.height()/2-25), new Point(img_display.width()/2+70,img_display.height()/2+25));
+                Rect out = new Rect(new Point(img_display.width()/2-width/2,img_display.height()/2-height/2), new Point(img_display.width()/2+width/2,img_display.height()/2+height/2));
                 croppedPart = img_color.submat(out);
                 PlateProcessing pp = new PlateProcessing();
                 Mat pre_img = pp.getLicensePlate(croppedPart, null, null, 0);
@@ -317,8 +321,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
             isOn=false;
         }
-        if (!isOn)
-            mOpenCvCameraView.enableAutoFocus();
+        //if (!isOn)
+        //    mOpenCvCameraView.enableAutoFocus();
         return img_color;
 
     }
