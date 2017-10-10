@@ -22,6 +22,12 @@ public class MPRCameraView extends JavaCameraView {
     public MPRCameraView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
+    public void configure() {
+        Camera.Parameters params = mCamera.getParameters();
+        params.set("auto-exposure", "center-weighted");
+        params.setAutoExposureLock(false);
+        mCamera.setParameters(params);
+    }
     public void enableAutoFocus() {
         if (focusing)
             return;
@@ -41,10 +47,16 @@ public class MPRCameraView extends JavaCameraView {
             }
         });
     }
+    public String getParams() {
+        Camera.Parameters params = mCamera.getParameters();
+        String x = params.flatten();
+        return params.flatten();
+    }
     public boolean isFocusing() {
         return focusing;
     }
     public void enableOnTouchFocus(final MainActivity act) {
+        configure();
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
